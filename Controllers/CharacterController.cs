@@ -6,9 +6,11 @@ using WebAPI_RPG.Models;
 using WebAPI_RPG.Services.CharacterService;
 using System.Threading.Tasks;
 using WebAPI_RPG.DTOs.Characters;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WebAPI_RPG.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("[controller]")]
     public class CharacterController : ControllerBase
