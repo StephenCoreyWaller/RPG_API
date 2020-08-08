@@ -1,5 +1,4 @@
-using System.Xml;
-using System.Reflection.PortableExecutable;
+using System.Security.Claims;
 using System;
 using System.Linq;
 using System.Collections.Generic;
@@ -9,15 +8,19 @@ using WebAPI_RPG.DTOs.Characters;
 using AutoMapper;
 using WebAPI_RPG.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Http;
 
 namespace WebAPI_RPG.Services.CharacterService
 {
     public class CharacterService : ICharacterService
     {
         private readonly IMapper _mapper;
-        public DataContext _context { get; set; }
-        public CharacterService(IMapper mapper, DataContext context)
+        private readonly DataContext _context;
+        private readonly IHttpContextAccessor _contextAccessor;
+        int GetUserId() => int.Parse(_contextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier)); 
+        public CharacterService(IMapper mapper, DataContext context, IHttpContextAccessor contextAccessor)
         {
+            _contextAccessor = contextAccessor;
             _context = context;
             _mapper = mapper;
         }
@@ -25,16 +28,17 @@ namespace WebAPI_RPG.Services.CharacterService
         {
             ServiceWrapper<List<GetCharacterDTO>> _wrapper = new ServiceWrapper<List<GetCharacterDTO>>();
             Character newChar = _mapper.Map<Character>(character);
+            newChar.User = await _context.Users.FirstOrDefaultAsync(u => u.id == GetUserId()); 
             await _context.Characters.AddAsync(newChar);
-            await _context.SaveChangesAsync(); 
-            List<Character> characters = await _context.Characters.ToListAsync();
+            await _context.SaveChangesAsync();
+            List<Character> characters = await _context.Characters.Where(c => c.User.id == GetUserId()).ToListAsync();
             _wrapper.Data = characters.Select(c => _mapper.Map<GetCharacterDTO>(c)).ToList();
             return _wrapper;
         }
         public async Task<ServiceWrapper<List<GetCharacterDTO>>> GetAllCharactersService()
         {
             ServiceWrapper<List<GetCharacterDTO>> _wrapper = new ServiceWrapper<List<GetCharacterDTO>>();
-            List<Character> characters = await _context.Characters.ToListAsync(); 
+            List<Character> characters = await _context.Characters.Where(c => c.User.id == GetUserId()).ToListAsync();
             _wrapper.Data = characters.Select(c => _mapper.Map<GetCharacterDTO>(c)).ToList();
             return _wrapper;
         }
@@ -58,8 +62,8 @@ namespace WebAPI_RPG.Services.CharacterService
                 updatedChar.Spirit = character.Dexterity;
                 updatedChar.Strength = character.Strength;
                 updatedChar.Class = character.Class;
-                _context.Characters.Update(updatedChar); 
-                await _context.SaveChangesAsync(); 
+                _context.Characters.Update(updatedChar);
+                await _context.SaveChangesAsync();
                 _wrapper.Data = _mapper.Map<GetCharacterDTO>(await _context.Characters.FirstAsync(c => c.Id == updatedChar.Id));
             }
             catch (Exception ex)
@@ -79,7 +83,7 @@ namespace WebAPI_RPG.Services.CharacterService
                 Character character = await _context.Characters.FirstAsync(c => c.Id == id);
                 _context.Characters.Remove(character);
                 await _context.SaveChangesAsync();
-                List<Character> characters = await _context.Characters.ToListAsync(); 
+                List<Character> characters = await _context.Characters.ToListAsync();
                 _wrapper.Data = characters.Select(c => _mapper.Map<GetCharacterDTO>(c)).ToList();
             }
             catch (Exception ex)
