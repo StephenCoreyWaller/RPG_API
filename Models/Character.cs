@@ -12,6 +12,6 @@ namespace WebAPI_RPG.Models
         public int Spirit { get; set; } = 20; 
         public RPG_Class Class { get; set; } = RPG_Class.Mage; 
         public User User { get; set; }
-
+        public Weapon Weapon { get; set; }
     }
 }

@@ -31,14 +31,14 @@ namespace WebAPI_RPG.Services.CharacterService
             newChar.User = await _context.Users.FirstOrDefaultAsync(u => u.id == GetUserId()); 
             await _context.Characters.AddAsync(newChar);
             await _context.SaveChangesAsync();
-            List<Character> characters = await _context.Characters.Where(c => c.User.id == GetUserId()).ToListAsync();
+            List<Character> characters = await _context.Characters.Include(c => c.Weapon).Where(c => c.User.id == GetUserId()).ToListAsync();
             _wrapper.Data = characters.Select(c => _mapper.Map<GetCharacterDTO>(c)).ToList();
             return _wrapper;
         }
         public async Task<ServiceWrapper<List<GetCharacterDTO>>> GetAllCharactersService()
         {
             ServiceWrapper<List<GetCharacterDTO>> _wrapper = new ServiceWrapper<List<GetCharacterDTO>>();
-            List<Character> characters = await _context.Characters.Where(c => c.User.id == GetUserId()).ToListAsync();
+            List<Character> characters = await _context.Characters.Include(c => c.Weapon).Where(c => c.User.id == GetUserId()).ToListAsync();
             _wrapper.Data = characters.Select(c => _mapper.Map<GetCharacterDTO>(c)).ToList();
             return _wrapper;
         }
@@ -48,7 +48,7 @@ namespace WebAPI_RPG.Services.CharacterService
 
             try{
 
-                Character character = await _context.Characters.Where(c => c.User.id == GetUserId()).FirstAsync(c => c.Id == id);
+                Character character = await _context.Characters.Include(c => c.Weapon).Where(c => c.User.id == GetUserId()).FirstAsync(c => c.Id == id);
                 _wrapper.Data = _mapper.Map<GetCharacterDTO>(character);
 
             }catch(Exception ex){
@@ -72,7 +72,7 @@ namespace WebAPI_RPG.Services.CharacterService
                 updatedChar.Class = character.Class ?? updatedChar.Class;
                 _context.Characters.Update(updatedChar);
                 await _context.SaveChangesAsync();
-                _wrapper.Data = _mapper.Map<GetCharacterDTO>(await _context.Characters.FirstAsync(c => c.Id == updatedChar.Id));
+                _wrapper.Data = _mapper.Map<GetCharacterDTO>(await _context.Characters.Include(c => c.Weapon).FirstAsync(c => c.Id == updatedChar.Id));
             }
             catch (Exception ex)
             {

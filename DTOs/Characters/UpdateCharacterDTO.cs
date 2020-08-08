@@ -4,7 +4,7 @@ namespace WebAPI_RPG.DTOs.Characters
 {
     public class UpdateCharacterDTO
     {
-        public string? Name { get; set; } 
+        public string Name { get; set; } 
         public int Id { get; set; }
         public int? Health { get; set; } 
         public int? Magic { get; set; } 
