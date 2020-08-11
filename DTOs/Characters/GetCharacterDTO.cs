@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using WebAPI_RPG.DTOs.Weapon_;
 using WebAPI_RPG.Models;
 
@@ -14,5 +15,6 @@ namespace WebAPI_RPG.DTOs.Characters
         public int Spirit { get; set; } 
         public RPG_Class Class { get; set; } 
         public GetWeaponDTO Weapon { get; set; }
+        public List<CharacterSkill> Skills { get; set; }
     }
 }

@@ -12,6 +12,7 @@ using Microsoft.IdentityModel.Tokens;
 using WebAPI_RPG.Data;
 using WebAPI_RPG.Services.CharacterService;
 using WebAPI_RPG.Services.CharacterService.WeaponsService;
+using WebAPI_RPG.Services.Skills;
 
 namespace WebAPI_RPG
 {
@@ -32,7 +33,8 @@ namespace WebAPI_RPG
             services.AddAutoMapper(typeof(Startup)); 
             services.AddScoped<ICharacterService, CharacterService>(); 
             services.AddScoped<IAuthRepository, AuthRepository>(); 
-            services.AddScoped<IWeaponService, WeaponService>(); ;
+            services.AddScoped<IWeaponService, WeaponService>();
+            services.AddScoped<ISkillService, SkillService>();
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options => 
                 options.TokenValidationParameters = new TokenValidationParameters{

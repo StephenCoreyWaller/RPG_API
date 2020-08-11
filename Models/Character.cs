@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Reflection;
 namespace WebAPI_RPG.Models
 {
@@ -13,5 +14,6 @@ namespace WebAPI_RPG.Models
         public RPG_Class Class { get; set; } = RPG_Class.Mage; 
         public User User { get; set; }
         public Weapon Weapon { get; set; }
+        public List<CharacterSkill> CharacterSkills { get; set; }
     }
 }

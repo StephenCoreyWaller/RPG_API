@@ -1,3 +1,4 @@
+using System.Linq;
 using System;
 using AutoMapper;
 using WebAPI_RPG.DTOs.User;
